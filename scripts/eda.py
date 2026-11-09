@@ -2,6 +2,7 @@
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from matplotlib.ticker import NullFormatter
 import numpy as np
 import pandas as pd
 from PIL import Image, ImageOps
@@ -44,6 +45,11 @@ def histograms(df):
             ax.hist(g[col], bins=bins, alpha=0.55,
                     label=f"{cls} (median {g[col].median():.0f})")
         ax.set_xscale("log")
+        ticks = [t for t in (10, 20, 50, 100, 200, 500, 1000, 2000, 5000)
+                 if bins[0] <= t <= bins[-1]]
+        ax.set_xticks(ticks)
+        ax.set_xticklabels([f"{t:,}" for t in ticks])
+        ax.xaxis.set_minor_formatter(NullFormatter())
         ax.set_xlabel(label + ", log scale")
         ax.set_ylabel("Number of images")
         ax.set_title(f"{label} per class")
