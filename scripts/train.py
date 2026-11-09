@@ -9,13 +9,16 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from models import build_baseline, compile_model
+from models import build_baseline, build_mobilenet, compile_model, unfreeze_last_block
 from pipeline import SEED, make_ds, seed_everything
 
 p = argparse.ArgumentParser()
 p.add_argument("--epochs", type=int, default=1)
 p.add_argument("--lr", type=float, default=1e-3)
 p.add_argument("--name", default="baseline")
+p.add_argument("--model", choices=["baseline", "mobilenet"], default="baseline")
+p.add_argument("--stage", type=int, choices=[1, 2], default=1)
+p.add_argument("--init", default=None)
 args = p.parse_args()
 
 os.makedirs("models", exist_ok=True)
@@ -25,9 +28,16 @@ seed_everything()
 train_ds = make_ds("train", training=True)
 val_ds = make_ds("val")
 
-model = build_baseline(lr=args.lr)
+if args.model == "baseline":
+    model = build_baseline(lr=args.lr)
+elif args.stage == 1:
+    model = build_mobilenet(lr=args.lr)
+else:
+    model = keras.models.load_model(f"models/{args.init}.keras")
+    unfreeze_last_block(model, args.lr)
 if not model.compiled:
     compile_model(model, args.lr)
+print(f"trainable params: {sum(w.numpy().size for w in model.trainable_weights):,}")
 
 ckpt_path = f"models/{args.name}.keras"
 callbacks = [
