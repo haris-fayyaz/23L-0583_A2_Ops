@@ -1,0 +1,11 @@
+path,class,label,mobilenet_s2,w,h,mode,fmt,kb
+RealArt/RealArt/famous-paintings-fb.png,RealArt,0,0.951,1200,630,RGB,PNG,1147.919
+RealArt/RealArt/ct-art-vector-illustrations-creative-minimalist-hand-drawn-vector-2286463217.jpg,RealArt,0,0.773,1500,933,RGB,JPEG,100.99
+RealArt/RealArt/Famous-Portrait-Paintings-848x530-1.jpg,RealArt,0,0.769,848,530,RGB,JPEG,111.759
+RealArt/RealArt/getty_511618259_186076.jpg,RealArt,0,0.768,1920,1080,RGB,JPEG,294.242
+RealArt/RealArt/images60.jpg,RealArt,0,0.699,311,162,RGB,JPEG,13.335
+AiArtData/AiArtData/Screen_Shot_2023-01-22_at_5.33.01_PM.png,AiArtData,1,0.028,1212,1480,RGBA,PNG,4447.546
+AiArtData/AiArtData/Nov20_17_498430921.jpg,AiArtData,1,0.071,1200,675,RGB,JPEG,1186.318
+AiArtData/AiArtData/Boris-Eldagsen-AI-art.jpg,AiArtData,1,0.075,1068,601,RGB,JPEG,81.154
+AiArtData/AiArtData/Midjourney-River.jpg,AiArtData,1,0.116,1664,1109,RGB,JPEG,1357.92
+AiArtData/AiArtData/ai-cartoon-portraits-01.jpg,AiArtData,1,0.126,1000,1012,RGB,JPEG,126.938
