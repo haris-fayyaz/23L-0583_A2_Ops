@@ -3,4 +3,5 @@ __pycache__/
 *.pyc
 .env
 mlruns/
-models/tuner_runs/
+models/
+tuner_runs/
