@@ -6,7 +6,7 @@ from pipeline import IMG_SIZE
 
 def conv_block(x, filters, name):
     x = layers.Conv2D(filters, 3, padding="same", use_bias=False, name=f"{name}_conv")(x)
-    x = layers.BatchNormalization(name=f"{name}_bn")(x)
+    x = layers.BatchNormalization(momentum=0.9, name=f"{name}_bn")(x)
     x = layers.Activation("relu", name=f"{name}_relu")(x)
     return layers.MaxPooling2D(name=f"{name}_pool")(x)
 
