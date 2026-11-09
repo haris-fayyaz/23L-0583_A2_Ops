@@ -1,0 +1,7 @@
+stage,part,layer,type,trainable_params
+stage1_frozen,head,prob_ai,Dense,1281
+stage2_last_block,base,block_16_expand,Conv2D,153600
+stage2_last_block,base,block_16_depthwise,DepthwiseConv2D,8640
+stage2_last_block,base,block_16_project,Conv2D,307200
+stage2_last_block,base,Conv_1,Conv2D,409600
+stage2_last_block,head,prob_ai,Dense,1281

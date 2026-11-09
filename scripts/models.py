@@ -35,3 +35,32 @@ def build_baseline(lr=1e-3, dropout=0.3):
     outputs = layers.Dense(1, activation="sigmoid", name="prob_ai")(x)
     model = keras.Model(inputs, outputs, name="baseline_cnn")
     return compile_model(model, lr)
+
+
+def build_mobilenet(lr=1e-3, dropout=0.3):
+    inputs = keras.Input(shape=(*IMG_SIZE, 3), name="image")
+    x = layers.Rescaling(1 / 127.5, offset=-1.0, name="mobilenet_preprocess")(inputs)
+    base = keras.applications.MobileNetV2(
+        input_shape=(*IMG_SIZE, 3),
+        include_top=False,
+        weights="imagenet",
+        name="mobilenetv2_base",
+    )
+    base.trainable = False
+    x = base(x, training=False)
+    x = layers.GlobalAveragePooling2D(name="gap")(x)
+    x = layers.Dropout(dropout, name="dropout")(x)
+    outputs = layers.Dense(1, activation="sigmoid", name="prob_ai")(x)
+    model = keras.Model(inputs, outputs, name="mobilenet_v2")
+    return compile_model(model, lr)
+
+
+def unfreeze_last_block(model, lr):
+    base = model.get_layer("mobilenetv2_base")
+    start = base.layers.index(base.get_layer("block_16_expand"))
+    base.trainable = True
+    for i, layer in enumerate(base.layers):
+        layer.trainable = i >= start and not isinstance(
+            layer, layers.BatchNormalization
+        )
+    return compile_model(model, lr)
