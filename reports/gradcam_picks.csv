@@ -1,0 +1,9 @@
+kind,path,class,prob
+real->real,RealArt/RealArt/homepage-usp-photo-2_600x.jpg,RealArt,0.054
+real->real,RealArt/RealArt/-Skills-Promo-A-Total-Artist-All-of-North-Wests-Impressive-Drawings-Photos-5.jpg,RealArt,0.056
+fake->fake,AiArtData/AiArtData/2022-11-10-image-12.jpg,AiArtData,0.981
+fake->fake,AiArtData/AiArtData/63964cc739abd575d50b68ed_google-not-against-ai.jpg,AiArtData,0.975
+real->fake,RealArt/RealArt/famous-paintings-fb.png,RealArt,0.951
+real->fake,RealArt/RealArt/ct-art-vector-illustrations-creative-minimalist-hand-drawn-vector-2286463217.jpg,RealArt,0.773
+fake->real,AiArtData/AiArtData/Screen_Shot_2023-01-22_at_5.33.01_PM.png,AiArtData,0.028
+fake->real,AiArtData/AiArtData/Nov20_17_498430921.jpg,AiArtData,0.071
