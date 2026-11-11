@@ -20,7 +20,7 @@ services:
 
   web:
     build: .
-    image: 23l-0583_a2_ops-web:compose
+    image: 23l-0583_a2_ops-web:slim
     depends_on:
       db:
         condition: service_healthy
