@@ -1,0 +1,26 @@
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    HOST=0.0.0.0 \
+    PORT=5000 \
+    MODEL_PATH=/app/models/mobilenet_s2.keras
+
+RUN useradd --create-home --uid 1000 appuser
+WORKDIR /app
+
+# Packages first: this layer is reused until requirements change
+COPY requirements-web.txt .
+RUN pip install --no-cache-dir -r requirements-web.txt
+
+# Code and the model last. The model is built in because Cloud Run has no local folder to mount.
+COPY --chown=appuser:appuser app ./app
+COPY --chown=appuser:appuser models/mobilenet_s2.keras ./models/mobilenet_s2.keras
+
+USER appuser
+EXPOSE 5000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
+  CMD python -c "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:%s/health' % os.environ.get('PORT','5000'), timeout=3)"
+
+CMD ["python", "-m", "app.api"]
