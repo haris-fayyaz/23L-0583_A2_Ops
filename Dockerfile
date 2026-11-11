@@ -10,7 +10,7 @@ WORKDIR /app
 
 # Packages first: this layer is reused until requirements change
 COPY requirements-web.txt .
-RUN pip install -r requirements-web.txt
+RUN pip install --no-cache-dir -r requirements-web.txt
 
 # Source last: it changes often
 COPY --chown=appuser:appuser app ./app
