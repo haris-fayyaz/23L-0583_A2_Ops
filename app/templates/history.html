@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisionGuard | History</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="/"><svg class="ico" viewBox="0 0 24 24"><path d="M12 2.5 4 5.5v6c0 4.7 3.2 8.3 8 10 4.8-1.7 8-5.3 8-10v-6l-8-3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>VisionGuard</a>
+    <nav class="links always" aria-label="Main">
+      <a href="/">Home</a>
+      <a href="/history" class="active">History</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero wrap" style="padding-bottom:20px">
+  <p class="eyebrow">REQUEST HISTORY</p>
+  <h1>What was <span class="grad">decided</span>.</h1>
+  <p class="lead">Every prediction is saved with its decision, time, model and AI score. Newest first, up to 100 rows.</p>
+</section>
+
+<section class="wrap">
+  {% if rows %}
+  <div class="glass tablewrap">
+    <table>
+      <thead>
+        <tr><th>Time (UTC)</th><th>File</th><th>Decision</th><th>AI score</th><th>Model</th><th>Threshold</th></tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td>{{ r.created_at.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+          <td>{{ r.filename }}</td>
+          <td><span class="badge {{ 'ai' if r.label == 'AI-generated' else 'real' }}">{{ r.label }}</span></td>
+          <td>{{ "%.1f"|format(r.confidence * 100) }}%</td>
+          <td>{{ r.model }}</td>
+          <td>{{ r.threshold }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="glass empty">No requests yet. <a href="/" style="color:var(--accent)">Check an image</a> and it will appear here.</div>
+  {% endif %}
+</section>
+</main>
+</body>
+</html>
