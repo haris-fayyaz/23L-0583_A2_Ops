@@ -1,0 +1,41 @@
+name: 23l-0583_a2_ops
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+    # No ports: the database is reachable only on the Compose network
+
+  web:
+    build: .
+    image: 23l-0583_a2_ops-web:compose
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      MODEL_PATH: /app/models/mobilenet_s2.keras
+      MODEL_NAME: mobilenet_s2
+      THRESHOLD: "0.25"
+      MAX_UPLOAD_MB: "10"
+    ports:
+      - "5000:5000"
+    volumes:
+      # Model is not in git or in the image, so it is mounted read-only
+      - ./models:/app/models:ro
+    restart: unless-stopped
+
+volumes:
+  pgdata:
