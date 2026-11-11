@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisionGuard | AI Image Authenticity Detection</title>
+<meta name="description" content="Upload an image and discover whether it is AI-generated or real.">
+<link rel="stylesheet" href="/static/styles.css">
+<script>window.PIXELPROOF_API_URL = "/predict";</script>
+<script type="module" src="/static/app.js"></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-logo" viewBox="0 0 24 24"><path d="M12 2.5 4 5.5v6c0 4.7 3.2 8.3 8 10 4.8-1.7 8-5.3 8-10v-6l-8-3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.6-7.96A6 6 0 0 1 18 9.5 4.3 4.3 0 0 1 17.5 18M12 12v8m0-8-3 3m3-3 3 3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M9.5 9.5h5v5h-5zM9 3v3m6-3v3M9 18v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4m0 16h16M8 16v-4m4 4V8m4 8v-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m8 12.3 2.8 2.8L16.3 9" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 16h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+</svg>
+
+<div class="bg" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#home"><svg class="ico"><use href="#i-logo"/></svg>VisionGuard</a>
+    <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false" aria-controls="links"><span></span><span></span><span></span></button>
+    <nav class="links" id="links" aria-label="Main">
+      <a href="#home" class="active">Home</a>
+      <a href="#how">How It Works</a>
+      <a href="#about">About</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero wrap" id="home">
+  <p class="eyebrow rise" style="--d:0ms">AI-POWERED IMAGE AUTHENTICITY DETECTION</p>
+  <h1 class="rise" style="--d:80ms">See the <span class="grad">Truth</span> in Every Image.</h1>
+  <p class="lead rise" style="--d:160ms">Upload an image and discover whether it is AI-generated or real using intelligent image analysis.</p>
+</section>
+
+<section class="wrap detector rise" style="--d:240ms" aria-labelledby="up-title">
+  <div class="glass card" id="detector" data-state="idle">
+    <div class="demo-badge" id="demo" hidden>Demo mode: backend not connected, results are not real predictions.</div>
+
+    <div class="drop" id="dropzone">
+      <svg class="ico big"><use href="#i-upload"/></svg>
+      <h2 id="up-title">Upload Your Image</h2>
+      <p>Drag and drop your image here, or browse files.</p>
+      <button type="button" class="btn primary" id="browse">Browse Files</button>
+      <p class="hint">JPG, JPEG, PNG &middot; Max 10 MB</p>
+      <input type="file" id="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" hidden aria-label="Choose an image file">
+    </div>
+    <p class="error" id="error" role="alert" hidden></p>
+
+    <div class="preview" id="preview">
+      <div class="frame" id="frame">
+        <img id="img" alt="Your uploaded image preview">
+        <div class="scan" aria-hidden="true"></div>
+      </div>
+      <div class="meta">
+        <div class="file"><span id="fname" class="name"></span><span id="fsize" class="size"></span></div>
+        <button type="button" class="btn ghost" id="remove">Remove</button>
+      </div>
+    </div>
+
+    <div class="actions" id="actions">
+      <button type="button" class="btn primary wide" id="analyze">Analyze Image</button>
+    </div>
+
+    <div class="processing" id="processing" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <h2>Analyzing Your Image...</h2>
+      <p>Our AI model is examining the image to determine its authenticity.</p>
+    </div>
+
+    <div class="result" id="result" aria-live="polite">
+      <div class="res-head">
+        <svg class="ico big" id="res-icon"><use href="#i-check"/></svg>
+        <div><p class="res-sub">Prediction</p><h2 id="res-label"></h2></div>
+      </div>
+      <p class="conf">AI score (P(AI)): <strong id="res-conf"></strong></p>
+      <div class="bar" role="progressbar" aria-label="AI score" aria-valuemin="0" aria-valuemax="100" id="bar"><div class="fill" id="fill"></div></div>
+      <p class="note">This is a statistical guess, not proof. The model was right on about 7 of 10 unseen test images and can call a fake image real. A score near the 25% threshold is uncertain.</p>
+      <button type="button" class="btn primary wide" id="again">Analyze Another Image</button>
+    </div>
+  </div>
+</section>
+
+<section class="wrap block" id="how">
+  <h2 class="sec">How It Works</h2>
+  <div class="steps">
+    <article class="glass step"><svg class="ico"><use href="#i-upload"/></svg><h3>1. Upload Image</h3><p>Select an image from your device.</p></article>
+    <article class="glass step"><svg class="ico"><use href="#i-cpu"/></svg><h3>2. AI Analysis</h3><p>Our trained machine learning model analyzes the image.</p></article>
+    <article class="glass step"><svg class="ico"><use href="#i-chart"/></svg><h3>3. Get Results</h3><p>Receive an authenticity prediction with a score.</p></article>
+  </div>
+</section>
+
+<section class="wrap block slim" id="about">
+  <h2 class="sec">About</h2>
+  <p class="muted">VisionGuard sends your image to a trained classification model served through an MLOps pipeline and shows the prediction it returns.</p>
+</section>
+
+<section class="wrap block slim" id="faq">
+  <h2 class="sec">FAQ</h2>
+  <details class="glass qa"><summary>Which files are supported?</summary><p>JPG, JPEG and PNG images up to 10 MB.</p></details>
+  <details class="glass qa"><summary>Is the result always correct?</summary><p>No. The score is the model's estimate, and models can be wrong, especially on edited or heavily compressed images.</p></details>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div><a class="brand" href="#home"><svg class="ico"><use href="#i-logo"/></svg>VisionGuard</a><p class="muted">AI-powered image authenticity detection.</p></div>
+    <nav class="flinks" aria-label="Footer"><a href="#about">About</a><a href="#">Privacy</a><a href="#">Contact</a></nav>
+    <p class="muted copy">&copy; 2026 VisionGuard. All rights reserved.</p>
+  </div>
+</footer>
+</body>
+</html>
