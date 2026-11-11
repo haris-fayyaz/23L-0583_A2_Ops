@@ -3,13 +3,15 @@ import os
 from flask import Flask, jsonify, render_template, request
 from werkzeug.utils import secure_filename
 
-from app import inference
+from app import db, inference
 
 ALLOWED = {"png", "jpg", "jpeg"}
 MAX_MB = int(os.getenv("MAX_UPLOAD_MB", "10"))
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = MAX_MB * 1024 * 1024
+
+db.init_db()
 
 
 def error_page(code, title, msg):
@@ -41,7 +43,14 @@ def predict():
     except inference.ImageDecodeError:
         return error_page(422, "Cannot read image",
                           "The file looks like an image but cannot be decoded.")
+    db.log_request(name, res["label"], res["confidence"],
+                   res["threshold"], res["model"])
     return jsonify(name=name, **res)
+
+
+@app.get("/history")
+def history():
+    return render_template("history.html", rows=db.recent())
 
 
 @app.get("/health")
