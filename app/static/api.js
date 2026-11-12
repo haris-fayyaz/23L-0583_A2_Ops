@@ -5,7 +5,7 @@ export const CONFIG = {
   // Leave empty to run in MOCK mode (UI demo only).
   API_URL: window.PIXELPROOF_API_URL || '',
   FIELD_NAME: 'file',   // multipart field name your backend expects
-  TIMEOUT_MS: 30000,
+  TIMEOUT_MS: 180000,
 };
 
 export const USE_MOCK = !CONFIG.API_URL;
