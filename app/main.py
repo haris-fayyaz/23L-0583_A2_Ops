@@ -1,9 +1,22 @@
 import os
 
+from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request
 from werkzeug.utils import secure_filename
 
-from app import db, inference
+from app import db
+
+load_dotenv()
+
+# With API_URL set, predictions come from the hosted API. Otherwise the local model is used.
+if os.getenv("API_URL"):
+    from app import client as backend
+    RemoteError = backend.RemoteError
+else:
+    from app import inference as backend
+
+    class RemoteError(Exception):
+        """Never raised in local mode."""
 
 ALLOWED = {"png", "jpg", "jpeg"}
 MAX_MB = int(os.getenv("MAX_UPLOAD_MB", "10"))
@@ -39,10 +52,12 @@ def predict():
     if not raw:
         return error_page(400, "Empty file", "The file has no content.")
     try:
-        res = inference.predict(raw)
-    except inference.ImageDecodeError:
+        res = backend.predict(raw)
+    except backend.ImageDecodeError:
         return error_page(422, "Cannot read image",
                           "The file looks like an image but cannot be decoded.")
+    except RemoteError as e:
+        return error_page(e.code, "Prediction service unavailable", e.message)
     db.log_request(name, res["label"], res["confidence"],
                    res["threshold"], res["model"])
     return jsonify(name=name, **res)
@@ -55,8 +70,10 @@ def history():
 
 @app.get("/health")
 def health():
-    return jsonify(status="ok", model=inference.MODEL_NAME,
-                   threshold=inference.THRESHOLD)
+    if os.getenv("API_URL"):
+        return jsonify(status="ok", mode="remote")
+    return jsonify(status="ok", model=backend.MODEL_NAME,
+                   threshold=backend.THRESHOLD)
 
 
 @app.errorhandler(413)
